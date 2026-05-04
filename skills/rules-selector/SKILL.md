@@ -48,7 +48,7 @@ Recommended shared rules:
 - go-project-rules: Go module detected via go.mod
 
 Install:
-sh /path/to/skillhub/scripts/skills.sh install project-workflow-rules go-project-rules
+skillhub install project-workflow-rules go-project-rules
 ```
 
 If no install is needed, say why and point to the local project overlay that

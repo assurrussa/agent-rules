@@ -30,9 +30,10 @@ search and installation:
 ```sh
 git clone git@github.com:assurrussa/skillhub.git
 cd skillhub
-sh scripts/skills.sh list
-sh scripts/skills.sh search go
-sh scripts/skills.sh install rules-selector go-project-rules
+sh install.sh
+skillhub list
+skillhub search go
+skillhub install rules-selector go-project-rules
 ```
 
 ## Update Flow
