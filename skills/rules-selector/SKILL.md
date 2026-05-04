@@ -1,12 +1,14 @@
 ---
 name: rules-selector
-description: Analyze a repository and recommend which shared agent-rules skills to install from catalog/skills.tsv. Use when choosing rules for a project, onboarding a host machine, listing applicable skills, or preparing an install command. It must recommend commands and avoid installing unless explicitly asked.
+description: Analyze a repository and recommend which shared agent-rules skills to install from catalog/skills.tsv through skillhub. Use when choosing rules for a project, onboarding a host machine, listing applicable skills, or preparing an install command. It must recommend commands and avoid installing unless explicitly asked.
 ---
 
 # Rules Selector
 
 Use this skill to recommend a minimal shared rules set for a project. The source
-catalog is `catalog/skills.tsv` in the `agent-rules` repository.
+catalog is `catalog/skills.tsv` in the `agent-rules` repository. Use `skillhub`
+for search and installation; this source repository should not own installer
+UX.
 
 ## Workflow
 
@@ -18,7 +20,7 @@ catalog is `catalog/skills.tsv` in the `agent-rules` repository.
    - public schemas, OpenAPI/protobuf files, release docs
 2. Read or search `catalog/skills.tsv` from the shared rules repo.
 3. Recommend the smallest skill set that fits the current project.
-4. Output the exact install command.
+4. Output the exact `skillhub` install command.
 5. Do not run install commands or mutate `$HOME` unless the user explicitly
    asks you to install.
 
@@ -46,7 +48,7 @@ Recommended shared rules:
 - go-project-rules: Go module detected via go.mod
 
 Install:
-sh /path/to/agent-rules/scripts/install.sh project-workflow-rules go-project-rules
+sh /path/to/skillhub/scripts/skills.sh install project-workflow-rules go-project-rules
 ```
 
 If no install is needed, say why and point to the local project overlay that

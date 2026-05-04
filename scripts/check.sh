@@ -15,16 +15,6 @@ if [ ! -f "$repo_root/README.md" ]; then
   exit 1
 fi
 
-if [ ! -f "$repo_root/scripts/install.sh" ]; then
-  printf 'Missing scripts/install.sh in %s\n' "$repo_root" >&2
-  exit 1
-fi
-
-if [ ! -f "$repo_root/scripts/list.sh" ]; then
-  printf 'Missing scripts/list.sh in %s\n' "$repo_root" >&2
-  exit 1
-fi
-
 if [ ! -f "$catalog_file" ]; then
   printf 'Missing catalog: %s\n' "$catalog_file" >&2
   exit 1
@@ -138,6 +128,11 @@ fi
 
 if ! grep -q 'catalog/skills.tsv' "$skills_dir/rules-selector/SKILL.md"; then
   printf 'rules-selector must reference catalog/skills.tsv\n' >&2
+  exit 1
+fi
+
+if ! grep -q 'skillhub' "$skills_dir/rules-selector/SKILL.md"; then
+  printf 'rules-selector must point installation to skillhub\n' >&2
   exit 1
 fi
 

@@ -4,8 +4,8 @@ Global Codex skills and rules shared across local repositories.
 
 ## What Is Here
 
-- `catalog/skills.tsv` — machine-readable catalog used by scripts and selector
-  guidance.
+- `catalog/skills.tsv` — machine-readable catalog consumed by `skillhub` and
+  selector guidance.
 - `skills/project-workflow-rules/SKILL.md` — reusable workflow baseline for
   scoped changes, source-of-truth order, verification, and dirty worktrees.
 - `skills/go-project-rules/SKILL.md` — reusable Go project baseline for
@@ -22,35 +22,17 @@ Project-specific repositories should keep their own `AGENTS.md` or docs overlay
 for concrete commands, module paths, frameworks, generated paths, release gates,
 and deployment contracts.
 
-## List Skills
+## Use With Skillhub
+
+This repository is the source of truth for shared rules. Use `skillhub` for
+search and installation:
 
 ```sh
-sh scripts/list.sh
-sh scripts/list.sh go
-```
-
-## Install Locally
-
-```sh
-sh scripts/install.sh
-```
-
-With no args or `--all`, the script syncs every cataloged skill into:
-
-```text
-~/.agents/skills/<skill-name>
-```
-
-Install only selected skills:
-
-```sh
-sh scripts/install.sh rules-selector go-project-rules
-```
-
-Install into a different target:
-
-```sh
-AGENT_SKILLS_DIR=/tmp/skills sh scripts/install.sh rules-selector
+git clone git@github.com:assurrussa/skillhub.git
+cd skillhub
+sh scripts/skills.sh list
+sh scripts/skills.sh search go
+sh scripts/skills.sh install rules-selector go-project-rules
 ```
 
 ## Update Flow
@@ -58,7 +40,7 @@ AGENT_SKILLS_DIR=/tmp/skills sh scripts/install.sh rules-selector
 1. Edit or add skills under `skills/`.
 2. Update `catalog/skills.tsv`.
 3. Run `sh scripts/check.sh`.
-4. Run `sh scripts/install.sh`.
+4. Use `skillhub` to install or refresh skills when needed.
 5. Open a new Codex session or reload skills if the client supports it.
 
 Keep this repository free of project-specific overlays. Local projects should
