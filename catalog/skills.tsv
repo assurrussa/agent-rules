@@ -1,0 +1,6 @@
+name	category	triggers	description
+docs-project-rules	documentation	docs,documentation,readme,architecture,runbook,audit,report	Global documentation rules for durable docs, project overlays, contract ownership, invariants, and conclusion-first reports.
+go-project-rules	go	go,golang,go.mod,go.work,backend,library	Global Go project rules for architecture, package boundaries, dependency direction, config, context, lifecycle, testing, and generated contracts.
+project-workflow-rules	workflow	scope,review,dirty worktree,contract change,verification,repo orientation	Global project workflow rules for scoped changes, source-of-truth order, evidence-first work, dirty worktree care, and verification.
+reusable-module-rules	architecture	reusable module,library,public surface,external consumer,release readiness,replace	Global reusable-module rules for public facades, supported import surfaces, clean consumer probes, and host/library ownership.
+rules-selector	tooling	select rules,install skills,recommend skills,project analysis,catalog	Analyze a project and recommend the minimal shared rules skills plus an exact install command without installing by default.

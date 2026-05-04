@@ -17,9 +17,10 @@ or changing code.
 3. Existing code patterns and tests in the package being changed.
 4. These global Go rules.
 
-Do not import project-specific assumptions from another repository. Treat DI
-frameworks, folder names, task commands, generated paths, release gates, and
-deployment topology as local overlays.
+Do not import project-specific assumptions from another repository. Treat
+dependency injection frameworks, folder names, task commands, generated paths,
+release gates, deployment topology, coverage thresholds, and environment key
+names as local overlays.
 
 ## Repository Orientation
 
@@ -31,6 +32,9 @@ deployment topology as local overlays.
   and integration checks.
 - If a command writes caches or temp files, use the repo's existing cache/tmp
   pattern instead of inventing a new one.
+- A local module replacement, workspace file, or in-repository fixture proves
+  checkout-level compatibility only. It does not prove that another project can
+  consume a released module.
 
 ## Layering
 
@@ -44,6 +48,9 @@ deployment topology as local overlays.
   SQL, Redis, storage, mail, metrics, and external clients.
 - Generated code is output. Do not edit it by hand; change its source contract
   and regenerate.
+- Reusable packages should expose intentional public facades. Do not make
+  callers import unstable internals just because those internals are convenient
+  inside the source repository.
 
 ## Dependency Direction
 
@@ -56,6 +63,20 @@ deployment topology as local overlays.
   state or package-level service locators.
 - Avoid import cycles by moving shared contracts or DTOs toward the consumer
   boundary, not by adding generic utility packages.
+- When one package embeds or extends another, keep the embedding boundary small:
+  configuration mapping, concrete clients, and project-specific features belong
+  to the host; reusable behavior belongs behind the reusable package facade.
+
+## Application Wiring
+
+- Keep application wiring in the composition layer. It may know about concrete
+  implementations, module order, lifecycle registration, and process config.
+- Do not let business packages depend on the composition container, service
+  locator, or framework-specific registration APIs.
+- Named, grouped, or keyed registrations are local wiring details. Document
+  them in the project overlay when they affect extension points or tests.
+- Stable extension points should be ordinary Go contracts or public facade
+  types, not implicit knowledge of the composition container.
 
 ## Configuration And Environment
 
@@ -66,6 +87,8 @@ deployment topology as local overlays.
   outside one package.
 - Do not silently change environment variable meaning or default paths; treat
   that as a contract change.
+- Path defaults, service addresses, feature flags, and credentials are
+  process-level inputs. Map them at the boundary and pass typed values inward.
 
 ## Constructors And Lifecycle
 
@@ -77,6 +100,8 @@ deployment topology as local overlays.
 - Prefer defaults-first option handling: apply defaults, validate, then build.
 - Required dependencies should be obvious from constructor parameters or a small
   required config struct.
+- Startup hooks should resolve dependencies, register work, and return. They
+  should not bury process ownership inside domain or adapter constructors.
 
 ## Context
 
@@ -88,6 +113,8 @@ deployment topology as local overlays.
 - Do not replace a caller's context with `context.Background()` inside reusable
   libraries or request handlers.
 - Derived contexts must be canceled on every path.
+- Detached work may use a fresh context only when the operation intentionally
+  outlives the caller. Bound that context with a timeout or lifecycle owner.
 
 ## HTTP, APIs, And Contracts
 
@@ -99,6 +126,8 @@ deployment topology as local overlays.
   map domain errors to transport responses.
 - Version public APIs deliberately. Do not mix future desired behavior with
   current documented behavior.
+- Public package paths, public facade types, feature registries, and documented
+  import surfaces are also contracts for reusable modules.
 
 ## Data Access And Transactions
 
@@ -110,6 +139,8 @@ deployment topology as local overlays.
   migration plan explicitly calls for them.
 - Keep identifier roles distinct; avoid collapsing local primary keys, public
   IDs, external IDs, and canonical identity keys without a contract decision.
+- Projection or read-model writes that must stay in sync with canonical writes
+  should share one transaction boundary when the storage layer supports it.
 
 ## Errors And Logging
 
@@ -132,6 +163,8 @@ deployment topology as local overlays.
   permissions, or background work change.
 - Keep generated mocks and generated clients synchronized with their source
   interfaces/contracts.
+- For reusable modules, include at least one consumer-shaped check that imports
+  only the documented public surface.
 
 ## Formatting, Linting, And Generation
 
@@ -142,6 +175,22 @@ deployment topology as local overlays.
   before claiming completion.
 - If lint failures are unrelated to the change, report them separately instead
   of hiding them with broad suppressions.
+- When changing generated contracts, verify both the contract source and the
+  generated output. Do not claim completion from source edits alone.
+
+## Reusable Modules
+
+- Keep the supported public surface machine-checkable when possible: a manifest,
+  smoke test, import policy, or clean external consumer probe is better than
+  prose alone.
+- Prefer stable public facades for embedding, extension, and host integration.
+  If callers need an internal behavior, expose a deliberate contract instead of
+  widening imports to unstable packages.
+- Local workspace or `replace` success is not release readiness. External reuse
+  requires a clean consumer to resolve the intended version without local path
+  overrides.
+- Keep reusable packages free of project-owned process wiring, deployment
+  assumptions, private environment names, and one-host feature decisions.
 
 ## Documentation Upkeep
 
@@ -152,3 +201,6 @@ deployment topology as local overlays.
   implementation details that will drift.
 - Separate global rules from project overlays. A reusable rule should not name a
   specific repo, DI framework, folder path, deployment tool, or release process.
+- If a lesson depends on one project's module layout, command catalog, generated
+  paths, or release process, put it in that project's overlay rather than this
+  global skill.
