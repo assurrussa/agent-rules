@@ -50,8 +50,8 @@ git diff --check
 ```
 
 When changing catalog or selector behavior, also verify through a local
-`skillhub` checkout when it is available. Keep the exact command documented in
-`skillhub`, not in this repository.
+`skillhub` checkout when it is available. Keep detailed smoke-test targets in
+`skillhub`; this repository README may show only the minimal public usage flow.
 
 ## Context7
 
