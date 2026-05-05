@@ -6,22 +6,40 @@ description: Analyze a repository and recommend which shared agent-rules skills 
 # Rules Selector
 
 Use this skill to recommend a minimal shared rules set for a project. The source
-catalog is `catalog/skills.tsv` in the `agent-rules` repository. Use `skillhub`
-for search and installation; this source repository should not own installer
-UX.
+catalog is exposed through `skillhub` active sources. Use `skillhub` for
+recommendation, search, and installation; this source repository should not own
+installer UX.
 
 ## Workflow
 
-1. Inspect project signals before recommending:
+1. Resolve the project root from the user's request or current working
+   directory.
+2. If `skillhub` is available, run:
+
+   ```sh
+   skillhub recommend --project <repo>
+   ```
+
+   Use that output as the primary recommendation source. If it reports no
+   sources configured, tell the user to add a source first, for example:
+
+   ```sh
+   skillhub sources defaults list
+   skillhub sources defaults add agent-rules
+   ```
+
+3. If `skillhub recommend` is unavailable or blocked, inspect project signals
+   before recommending:
    - `AGENTS.md`, `README.md`, docs indexes, task files
    - `go.mod`, `go.work`
    - `package.json`, frontend framework config
    - `composer.json`, `pyproject.toml`, `Cargo.toml`
    - public schemas, OpenAPI/protobuf files, release docs
-2. Read or search `catalog/skills.tsv` from the shared rules repo.
-3. Recommend the smallest skill set that fits the current project.
-4. Output the exact `skillhub` install command.
-5. Do not run install commands or mutate `$HOME` unless the user explicitly
+4. Read or search `catalog/skills.tsv` from the active source checkout if a
+   manual fallback is needed.
+5. Recommend the smallest skill set that fits the current project.
+6. Output the exact `skillhub` install command.
+7. Do not run install commands or mutate `$HOME` unless the user explicitly
    asks you to install.
 
 ## Selection Rules
@@ -44,11 +62,11 @@ Start with a short verdict, then list recommended skills and the command:
 
 ```text
 Recommended shared rules:
-- project-workflow-rules: non-trivial repo workflow baseline
-- go-project-rules: Go module detected via go.mod
+- agent-rules/project-workflow-rules: non-trivial repo workflow baseline
+- agent-rules/go-project-rules: Go module detected via go.mod
 
 Install:
-skillhub install project-workflow-rules go-project-rules
+skillhub install --target codex --scope project --project /path/to/repo agent-rules/project-workflow-rules agent-rules/go-project-rules
 ```
 
 If no install is needed, say why and point to the local project overlay that
