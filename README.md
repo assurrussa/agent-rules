@@ -1,11 +1,14 @@
 # Agent Rules
 
-Global Codex skills and rules shared across local repositories.
+Shared agent skills and reusable project rules. This repository is the content
+source for rules; installation, search, sync, target selection, and TUI UX live
+in `skillhub`.
 
 ## What Is Here
 
-- `catalog/skills.tsv` — machine-readable catalog consumed by `skillhub` and
-  selector guidance.
+- `AGENTS.md` — instructions for agents editing this repository.
+- `catalog/skills.tsv` — machine-readable index of the skills in this repo.
+- `docs/adding-skill.md` — contribution guide for adding shared skills.
 - `skills/project-workflow-rules/SKILL.md` — reusable workflow baseline for
   scoped changes, source-of-truth order, verification, and dirty worktrees.
 - `skills/go-project-rules/SKILL.md` — reusable Go project baseline for
@@ -17,90 +20,92 @@ Global Codex skills and rules shared across local repositories.
   overlay baseline.
 - `skills/rules-selector/SKILL.md` — project analyzer that recommends which
   shared skills to install.
+- `scripts/check.sh` — repository validation for skill folders, frontmatter,
+  and catalog consistency.
+- `templates/SKILL.md` — starter template for new shared skills.
 
 Project-specific repositories should keep their own `AGENTS.md` or docs overlay
 for concrete commands, module paths, frameworks, generated paths, release gates,
 and deployment contracts.
 
-## Use With Skillhub
+## How Agents Should Use This Repo
 
-This repository is a recommended Skillhub source. `skillhub` owns discovery,
-search, TUI selection, installation targets, and updates; this repository owns
-only the shared skill content and catalog.
+- Treat `skills/*/SKILL.md` as the source of truth for reusable guidance.
+- Treat installed copies under assistant-specific directories as generated
+  outputs, not editable source.
+- Use `catalog/skills.tsv` to discover available skills, categories, triggers,
+  and descriptions without scanning every skill body.
+- Keep global skills generic. Do not add one-project paths, command names,
+  environment keys, deployment tools, generated file paths, or private module
+  names.
+- Put concrete project workflow details in that project's `AGENTS.md` or docs
+  overlay instead.
 
-Install `skillhub` first:
+## Why The Catalog Exists
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/assurrussa/skillhub/main/install.sh | sh
+`catalog/skills.tsv` is the stable machine-readable contract for tools and
+agents. It answers:
+
+- which skills exist;
+- which category each skill belongs to;
+- which project signals should trigger a recommendation;
+- what short description can be shown in selectors and reviews.
+
+The catalog is intentionally small. It should point to skill directories; it
+should not become a second copy of the skill instructions.
+
+Current catalog columns:
+
+```text
+name    category    triggers    description
 ```
 
-Fresh Skillhub installs start with no active sources. Add this repository from
-the recommended defaults, then search or install skills:
+`name` must match `skills/<name>/`. `category`, `triggers`, and `description`
+are for discovery and recommendation.
+
+Current category taxonomy:
+
+- `architecture`
+- `backend`
+- `data`
+- `documentation`
+- `frontend`
+- `go`
+- `security`
+- `testing`
+- `tooling`
+- `workflow`
+
+## Why The Script Exists
+
+`scripts/check.sh` is the local quality gate for this content repository. It
+keeps the catalog and skill folders in sync and catches basic structural drift
+before the repo is consumed by tools.
+
+Run it after editing skills or catalog rows:
 
 ```sh
-skillhub sources defaults list
-skillhub sources defaults add agent-rules
-skillhub search go
-skillhub install rules-selector go-project-rules
-```
-
-Open the interactive selector:
-
-```sh
-skillhub tui
-```
-
-Install into a project instead of the global Codex-compatible skills directory:
-
-```sh
-skillhub install rules-selector go-project-rules --target codex --scope project --project /path/to/project
-```
-
-Inspect installed skills:
-
-```sh
-skillhub installed list
-skillhub targets detect --project /path/to/project
-```
-
-Update Skillhub itself without modifying installed skills:
-
-```sh
-skillhub update
-skillhub version
-```
-
-## Local Skillhub Checks
-
-When testing this checkout before publishing, point Skillhub at the local
-`agent-rules` directory instead of cloning from GitHub:
-
-```sh
-tmp=$(mktemp -d)
-SKILLHUB_CONFIG_DIR="$tmp/config" \
-SKILLHUB_AGENT_RULES_PATH="$PWD" \
-skillhub sources defaults add agent-rules
-
-SKILLHUB_CONFIG_DIR="$tmp/config" \
-SKILLHUB_AGENT_RULES_PATH="$PWD" \
-skillhub search go
-
-SKILLHUB_CONFIG_DIR="$tmp/config" \
-SKILLHUB_AGENT_RULES_PATH="$PWD" \
-AGENT_SKILLS_DIR="$tmp/skills" \
-skillhub install rules-selector
+sh scripts/check.sh
 ```
 
 ## Update Flow
 
 1. Edit or add skills under `skills/`.
 2. Update `catalog/skills.tsv`.
-3. Run `sh scripts/check.sh`.
-4. Use the local Skillhub check above when install behavior matters.
-5. Use `skillhub update` on host machines to refresh the Skillhub tool.
-6. Use `skillhub install ...` or `skillhub tui` to refresh installed skills.
-7. Open a new Codex session or reload skills if the client supports it.
+3. Follow `docs/adding-skill.md` and start from `templates/SKILL.md` for new
+   skills.
+4. Run `sh scripts/check.sh`.
+5. Run `git diff --check`.
+6. If install behavior matters, verify it through `skillhub`; keep the detailed
+   Skillhub workflow in the `skillhub` repository.
 
 Keep this repository free of project-specific overlays. Local projects should
 reference these skills as global baselines and keep only their concrete
 commands, paths, frameworks, and release/runtime contracts in the project repo.
+
+## Skillhub Boundary
+
+`skillhub` may consume this repository as a source, but this repository should
+not duplicate Skillhub's command documentation. Keep Skillhub usage, update
+flow, target adapters, install metadata, and TUI behavior documented in the
+`skillhub` repository.

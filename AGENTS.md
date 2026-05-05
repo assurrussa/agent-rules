@@ -17,10 +17,15 @@ catalog row, script, or docs before changing rules.
 
 - `skills/<name>/SKILL.md` holds reusable global guidance.
 - `catalog/skills.tsv` is the machine-readable catalog consumed by `skillhub`.
+- `docs/adding-skill.md` documents how to decide whether a new rule belongs
+  here and how to add it.
 - `scripts/check.sh` validates this source repository.
+- `templates/SKILL.md` is the starting point for new shared skills.
 - Search, list, sync, install, and future TUI UX belong in `skillhub`, not here.
 - Do not add `install.sh`, `list.sh`, search scripts, cache management, or TUI
   code to this repository.
+- Do not duplicate detailed `skillhub` usage in this repository. It is enough
+  to document that `skillhub` consumes the catalog and owns installation.
 
 Keep project-specific overlays out of shared skills. Concrete task names,
 module paths, private package names, environment keys, generated file paths,
@@ -31,6 +36,7 @@ project repository that owns them.
 
 - Keep existing skill identities stable unless the user explicitly asks for a
   rename.
+- For a new skill, start from `templates/SKILL.md`.
 - When adding or removing a skill, update `catalog/skills.tsv` in the same
   change.
 - Keep `SKILL.md` frontmatter in sync with the directory name.
@@ -50,8 +56,8 @@ git diff --check
 ```
 
 When changing catalog or selector behavior, also verify through a local
-`skillhub` checkout when it is available. Keep detailed smoke-test targets in
-`skillhub`; this repository README may show only the minimal public usage flow.
+`skillhub` checkout when it is available. Keep detailed smoke-test targets and
+user-facing Skillhub commands in `skillhub`, not here.
 
 ## Context7
 
