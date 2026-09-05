@@ -61,10 +61,32 @@ user-facing Skillhub commands in `skillhub`, not here.
 
 ## Context7
 
-Use Context7 MCP to fetch current documentation whenever the user asks about a
-library, framework, SDK, API, CLI tool, or cloud service. This includes API
-syntax, configuration, version migration, library-specific debugging, setup
-instructions, and CLI tool usage.
+Use `$find-docs` for version-sensitive library, framework, SDK, API and CLI
+questions. It selects an available documentation tool, resolves the version and
+owns query limits and fallback. Reuse applicable docs already fetched in this
+task. Ordinary refactors, scripts, business logic and reviews need no lookup
+unless an external API contract is the unresolved question.
 
-Do not use Context7 for refactoring, writing scripts from scratch, debugging
-business logic, code review, or general programming concepts.
+
+## Shared Agent Context
+
+Use `$project-context-router` for cross-project context after local grounding.
+Resolve the shared root through `AGENT_CONTEXT_ROOT` or the skill resolver.
+Local verified docs and code remain the source of truth.
+
+When shared context is needed, follow `streams/AGENTS.md` and its query route.
+Reuse already loaded root rules, PII policy and glossary. Open the known hub
+and only the topic relevant to the task:
+
+- `streams/wiki/platforms/agent-rules.md`
+
+For integration work, open only the affected neighbour hub:
+
+- `streams/wiki/platforms/skillhub.md`
+
+Use `streams/wiki/index.md` only to locate an unknown area or answer an overview
+question. This is a task router, not a mandatory list of wiki pages.
+
+
+If the wiki disagrees with local evidence, report the drift. Update the shared
+page only when documentation upkeep is in scope, after verification.
