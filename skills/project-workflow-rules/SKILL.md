@@ -27,6 +27,23 @@ contracts, or runtime evidence before giving a repo-specific answer.
 - Do not mix unrelated refactors, formatting churn, dependency upgrades, or
   repo-wide cleanup into a narrow fix.
 - If the user marks a task as docs-only, keep code/config/wiring untouched.
+- Prefer the simplest implementation that preserves required functionality;
+  moving complexity out of sight is not simplification. Do not add speculative
+  legacy compatibility. Before removing existing behavior, check actual use,
+  contracts, and migration needs, and obtain any required approval.
+
+## Preflight And Ownership
+
+- Before expensive work, verify the current target branch, relevant dependency
+  versions, required checks, and resource limits; check browser and safe fixture
+  database availability when needed. Confirm authorization for the intended actions; do not use
+  unverified database targets or external services as test fixtures.
+- Use one integration owner. Give workers disjoint changes and explicit
+  acceptance checks; check their status before waiting on dependent work.
+- On resource-constrained environments, serialize memory-heavy build/test
+  pipelines and limit worker concurrency instead of running competing stacks.
+- Reuse authorization within its granted scope; do not ask the same permission
+  again. New scope and actions requiring separate approval still need it.
 
 ## Working Tree Safety
 
@@ -49,12 +66,28 @@ contracts, or runtime evidence before giving a repo-specific answer.
 
 ## Verification
 
-- Run the narrowest check that proves the change while iterating.
-- Before claiming completion, run the validation command that matches the
-  changed surface and read its output.
-- If full verification is unavailable, say exactly what ran, what did not run,
-  and what risk remains.
-- Do not hide unrelated failures with broad suppressions; report them separately.
+- Run the narrowest check that proves the change while iterating. Plan one
+  full final validation pass after integration rather than repeating it for
+  every intermediate edit. Always run explicitly required repository gates.
+- After a later narrow edit, rerun affected tests/build and behavior checks;
+  rerun broader gates when their inputs changed or repository rules require
+  them. Earlier passing output is not proof for changed behavior.
+- For UI changes, use a real browser to verify the whole affected user journey,
+  including relevant mobile widths, errors, recovery, and repeated actions.
+  Unit tests and a successful build do not prove visual or interaction quality.
+- Before claiming completion, read final check output. State what passed,
+  failed, or did not run and the remaining risk; do not hide unrelated failures
+  with broad suppressions or describe focused checks as a full pass.
+
+## External Operations
+
+- Keep request payloads and status reads scoped to the needed files or fields;
+  use bounded requests and a clear completion condition for long operations.
+- If a write times out or its outcome is unknown, reconcile the remote state
+  read-only before retrying. Never assume a missing response means no change.
+- Retry only with evidence that the action did not execute and the retry
+  addresses the cause. Honor denials; report the exact target, action, reason,
+  and known state instead of bypassing restrictions or issuing blind retries.
 
 ## Progress Notes
 
