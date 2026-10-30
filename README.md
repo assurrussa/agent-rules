@@ -18,6 +18,8 @@ in `skillhub`.
   boundary baseline.
 - `skills/docs-project-rules/SKILL.md` — durable documentation and project
   overlay baseline.
+- `skills/frontend-project-rules/SKILL.md` — intuitive, simple, polished, and
+  accessible interfaces without losing functionality.
 - `skills/rules-selector/SKILL.md` — project analyzer that recommends which
   shared skills to install.
 - `scripts/check.sh` — repository validation for skill folders, frontmatter,

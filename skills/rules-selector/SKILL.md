@@ -52,6 +52,8 @@ installer UX.
   has external consumer fixtures.
 - Select `docs-project-rules` when the task involves docs, onboarding, audits,
   architecture notes, task notes, debug reports, or project overlays.
+- Select `frontend-project-rules` when creating, changing, or reviewing
+  application or website interfaces, interactions, forms, or accessibility.
 - Keep project-specific rules in the project repo. Do not recommend moving
   concrete task names, env keys, private module names, or deployment paths into
   shared skills.
